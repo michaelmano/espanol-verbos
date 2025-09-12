@@ -6,6 +6,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
   test: {
+    base: "/espanol-verbos/",
     environment: "jsdom", // allows DOM APIs in tests
     globals: true, // enables describe/it/test without imports
     setupFiles: "./vitest.setup.ts", // optional setup
