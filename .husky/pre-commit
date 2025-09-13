@@ -1,5 +1,4 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env node
 
 # Run lint + prettier only on staged files
 npx lint-staged
