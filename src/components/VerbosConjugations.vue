@@ -6,8 +6,12 @@ import { ref } from 'vue';
 
 // --- Reactive state ---
 const currentTable = ref<any[]>([]);
+const typeVisible = ref('AR');
 
-// Track currently active verb for highlighting
+const revealType = (type: VerbType) => {
+  typeVisible.value = type;
+};
+
 const activeVerb = ref<{ type: VerbType; infinitive: string } | null>(null);
 
 // --- Initialize table with first verbs of each type ---
@@ -24,6 +28,7 @@ currentTable.value = Object.entries(BASE_CONJUGATION_ENDINGS).map(([subject, end
 
 // --- Handler for clicking a verb ---
 const onClick = (verb: string, type: VerbType) => {
+  typeVisible.value = type;
   const stem = verb.slice(0, -2).toUpperCase();
   activeVerb.value = { type, infinitive: verb };
 
@@ -40,68 +45,73 @@ const onClick = (verb: string, type: VerbType) => {
 </script>
 
 <template>
-  <div class="p-4 space-y-8">
-    <!-- Conjugation Table -->
-    <div>
-      <h2 class="text-xl font-bold mb-2">Conjugation Table</h2>
-      <table class="table-auto border-collapse border border-gray-300 w-full text-center">
-        <thead class="bg-slate-600 text-white">
-          <tr>
-            <th class="border border-gray-300 px-2 py-1">SUJETO</th>
-            <th class="border border-gray-300 px-2 py-1">AR</th>
-            <th class="border border-gray-300 px-2 py-1">ER</th>
-            <th class="border border-gray-300 px-2 py-1">IR</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in currentTable" :key="row.subject">
-            <td class="border border-gray-300 px-2 py-1">{{ row.subject }}</td>
-            <td
-              class="border border-gray-300 px-2 py-1"
-              :class="{ 'bg-slate-200 text-slate-600': activeVerb?.type === 'AR' }"
-            >
-              {{ row.AR }}
-            </td>
-            <td
-              class="border border-gray-300 px-2 py-1"
-              :class="{ 'bg-slate-200 text-slate-600': activeVerb?.type === 'ER' }"
-            >
-              {{ row.ER }}
-            </td>
-            <td
-              class="border border-gray-300 px-2 py-1"
-              :class="{ 'bg-slate-200 text-slate-600': activeVerb?.type === 'IR' }"
-            >
-              {{ row.IR }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Verbs Tables -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div v-for="type in ['AR', 'ER', 'IR']" :key="type">
-        <h3 class="text-lg font-semibold mb-2">{{ type }} Verbs</h3>
-        <table class="table-auto border-collapse border border-gray-300 w-full text-left">
-          <thead class="bg-slate-600 text-white">
+  <div class="flex flex-wrap gap-4 pb-80 lg:pb-0">
+    <!-- Verbs Lists -->
+    <div class="flex-1 flex flex-wrap gap-4">
+      <div v-for="type in ['AR', 'ER', 'IR']" :key="type" class="flex-1 min-w-[200px] p-4">
+        <h3
+          class="text-lg font-semibold mb-2 cursor-pointer text-white transition-colors duration-200"
+          @click="revealType(type)"
+        >
+          {{ type }} Verbs
+        </h3>
+        <table class="table-auto w-full text-left text-sm font-medium tracking-wide">
+          <thead class="bg-sky-500 text-white sticky top-0 z-10 shadow">
             <tr>
-              <th class="border border-gray-300 px-2 py-1">Infinitive</th>
-              <th class="border border-gray-300 px-2 py-1">Translation</th>
+              <th class="px-2 py-1 rounded-tl-lg">Infinitive</th>
+              <th class="px-2 py-1 rounded-tr-lg">Translation</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="verb in verbs.filter((v) => v.type === type)"
               :key="verb.infinitive"
-              class="cursor-pointer hover:bg-gray-200 hover:text-slate-900"
+              class="cursor-pointer hover:bg-sky-500 hover:text-white transition-colors duration-200"
               @click="onClick(verb.infinitive, type)"
             >
-              <td class="border border-gray-300 px-2 py-1">{{ verb.infinitive }}</td>
-              <td class="border border-gray-300 px-2 py-1">{{ verb.translation }}</td>
+              <td class="px-2 py-1">{{ verb.infinitive }}</td>
+              <td class="px-2 py-1">{{ verb.translation }}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="bg-slate-800">
+      <div
+        class="w-full lg:w-96 border-t bg-slate-800 border-t-blue-500 max-h-96 rounded lg:border-0 sm:w-full overflow-y-auto fixed bottom-0 left-0 right-0 lg:sticky lg:top-4 lg:bottom-auto z-50"
+      >
+        <h2 class="text-xl font-bold mb-2 sticky top-0 z-20 p-2 text-white">Conjugation Table</h2>
+        <div class="overflow-y-auto scroll-smooth">
+          <table class="table-auto w-full text-center text-sm font-medium tracking-wide">
+            <thead class="bg-sky-500 sticky top-0 z-30 shadow">
+              <tr>
+                <th class="px-2 py-1 w-32">SUJETO</th>
+                <th v-if="typeVisible === 'AR'" class="px-2 py-1 w-48">AR</th>
+                <th v-if="typeVisible === 'ER'" class="px-2 py-1 w-48">ER</th>
+                <th v-if="typeVisible === 'IR'" class="px-2 py-1 w-48">IR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="row in currentTable"
+                :key="row.subject"
+                class="transition-colors duration-150"
+              >
+                <td class="px-2 py-1">{{ row.subject }}</td>
+                <td v-if="typeVisible === 'AR'" class="px-2 py-1 rounded-md">
+                  {{ row.AR }}
+                </td>
+                <td v-if="typeVisible === 'ER'" class="px-2 py-1 rounded-md">
+                  {{ row.ER }}
+                </td>
+                <td v-if="typeVisible === 'IR'" class="px-2 py-1 rounded-md">
+                  {{ row.IR }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
