@@ -1,15 +1,16 @@
+// vite.config.ts
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
-import { defineConfig } from 'vite';
+import { defineConfig as defineVitestConfig } from 'vitest/config';
 
-// https://vite.dev/config/
-export default defineConfig({
+// Export Vite + Vitest config
+export default defineVitestConfig({
   plugins: [vue(), tailwindcss()],
   test: {
     base: '/espanol-verbos/',
-    environment: 'jsdom', // allows DOM APIs in tests
-    globals: true, // enables describe/it/test without imports
-    setupFiles: './vitest.setup.ts', // optional setup
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './vitest.setup.ts',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
