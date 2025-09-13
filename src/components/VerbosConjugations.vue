@@ -1,12 +1,21 @@
 <script lang="ts" setup>
 import { verbs } from '@/data/verbs';
-import type { VerbType } from '@/interfaces/Conjugations';
+import type { VerbItem, VerbType } from '@/interfaces/Conjugations';
 import { BASE_CONJUGATION_ENDINGS } from '@/lib';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // --- Reactive state ---
 const currentTable = ref<any[]>([]);
 const typeVisible = ref('AR');
+const verbFilter = ref('');
+
+const filteredVerbs = computed(() => {
+  if (verbFilter.value === '') return verbs;
+
+  return verbs.filter((v: VerbItem) => {
+    return v.infinitive.includes(verbFilter.value) || v.translation.includes(verbFilter.value);
+  });
+});
 
 const revealType = (type: VerbType) => {
   typeVisible.value = type;
@@ -45,7 +54,7 @@ const onClick = (verb: string, type: VerbType) => {
 </script>
 
 <template>
-  <div class="flex flex-wrap gap-4 pb-80 lg:pb-0">
+  <div class="flex flex-wrap gap-4 pb-80 lg:pb-0 min-h-screen">
     <!-- Verbs Lists -->
     <div class="flex-1 flex flex-wrap gap-4">
       <div v-for="type in ['AR', 'ER', 'IR']" :key="type" class="flex-1 min-w-[200px] p-4">
@@ -64,7 +73,7 @@ const onClick = (verb: string, type: VerbType) => {
           </thead>
           <tbody>
             <tr
-              v-for="verb in verbs.filter((v) => v.type === type)"
+              v-for="verb in filteredVerbs.filter((v) => v.type === type)"
               :key="verb.infinitive"
               class="cursor-pointer hover:bg-sky-500 hover:text-white transition-colors duration-200"
               @click="onClick(verb.infinitive, type)"
@@ -79,9 +88,15 @@ const onClick = (verb: string, type: VerbType) => {
 
     <div class="bg-slate-800">
       <div
-        class="w-full lg:w-96 border-t bg-slate-800 border-t-blue-500 max-h-96 rounded lg:border-0 sm:w-full overflow-y-auto fixed bottom-0 left-0 right-0 lg:sticky lg:top-4 lg:bottom-auto z-50"
+        class="w-full p-2 lg:w-96 border-t bg-slate-800 border-t-blue-500 max-h-96 rounded lg:border-0 sm:w-full overflow-y-auto fixed bottom-0 left-0 right-0 lg:sticky lg:top-4 lg:bottom-auto z-50"
       >
-        <h2 class="text-xl font-bold mb-2 sticky top-0 z-20 p-2 text-white">Conjugation Table</h2>
+        <h2 class="text-xl font-bold mb-2 sticky top-0 z-20 text-white">Conjugation Table</h2>
+        <input
+          v-model="verbFilter"
+          class="p-2 w-full mb-2 bg-slate-700 rounded-0"
+          type="text"
+          placeholder="Filter Verbs"
+        />
         <div class="overflow-y-auto scroll-smooth">
           <table class="table-auto w-full text-center text-sm font-medium tracking-wide">
             <thead class="bg-sky-500 sticky top-0 z-30 shadow">
