@@ -1,6 +1,6 @@
 import type { VerbItem } from '@/interfaces/Conjugations';
 
-export const verbs: VerbItem = [
+export const verbs: VerbItem[] = [
   { infinitive: 'bajar', translation: 'to go down', type: 'AR' },
   { infinitive: 'buscar', translation: 'to search', type: 'AR' },
   { infinitive: 'cambiar', translation: 'to change', type: 'AR' },

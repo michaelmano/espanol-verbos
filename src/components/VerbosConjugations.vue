@@ -57,7 +57,11 @@ const onClick = (verb: string, type: VerbType) => {
   <div class="flex flex-wrap gap-4 pb-80 lg:pb-0 min-h-screen">
     <!-- Verbs Lists -->
     <div class="flex-1 flex flex-wrap gap-4">
-      <div v-for="type in ['AR', 'ER', 'IR']" :key="type" class="flex-1 min-w-[200px] p-4">
+      <div
+        v-for="type in ['AR', 'ER', 'IR'] as VerbType[]"
+        :key="type"
+        class="flex-1 min-w-[200px] p-4"
+      >
         <h3
           class="text-lg font-semibold mb-2 cursor-pointer text-white transition-colors duration-200"
           @click="revealType(type)"
