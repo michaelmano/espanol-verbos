@@ -18,7 +18,7 @@
     "test:ui": "vitest --ui",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
-    "format": "prettier --write .",
+    "format": "prettier --write . --ignore-path .prettierignore",
     "prepare": "husky",
     "deploy": "gh-pages -d dist"
   },
